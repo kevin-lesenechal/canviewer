@@ -15,10 +15,10 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTableView" name="frames_table">
-     <attribute name="verticalHeaderVisible">
+    <widget class="QTreeView" name="frames_table">
+     <property name="rootIsDecorated">
       <bool>false</bool>
-     </attribute>
+     </property>
     </widget>
    </item>
   </layout>
