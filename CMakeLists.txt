@@ -22,7 +22,9 @@ set(SOURCES
     src/ui/window.hpp
     src/ui/window.cpp
     src/ui/frames_model.hpp
-    src/ui/frames_model.cpp)
+    src/ui/frames_model.cpp
+    src/source_interface.hpp
+)
 
 set(TEST_SOURCES "")
 

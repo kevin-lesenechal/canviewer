@@ -1,27 +1,327 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Window</class>
- <widget class="QWidget" name="Window">
+ <widget class="QMainWindow" name="Window">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>664</width>
-    <height>756</height>
+    <width>1155</width>
+    <height>809</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Can viewer</string>
+   <string>CAN Viewer</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QTreeView" name="frames_table">
-     <property name="rootIsDecorated">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-  </layout>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QTreeView" name="frames_table">
+        <property name="rootIsDecorated">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="maximumSize">
+         <size>
+          <width>500</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Decoded CAN frames [Yamaha MT-07]</string>
+        </property>
+        <layout class="QFormLayout" name="formLayout">
+         <property name="horizontalSpacing">
+          <number>20</number>
+         </property>
+         <item row="2" column="0">
+          <widget class="QLabel" name="engineSpeedLabel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Engine speed</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Gear</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="data_gear">
+           <property name="text">
+            <string>N</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Indicated speed</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="data_speed">
+           <property name="text">
+            <string>0 km/h</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Engine temperature</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="data_engine_temp">
+           <property name="text">
+            <string>0 °C</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QProgressBar" name="data_engine_speed">
+           <property name="maximum">
+            <number>14000</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="format">
+            <string>%v RPM</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QProgressBar" name="data_throttle">
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="format">
+            <string>%p %</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="throttleLabel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Throttle</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="airTemperatureLabel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Air temperature</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLabel" name="data_air_temp">
+           <property name="text">
+            <string>0 °C</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="fuelConsumptionLabel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Fuel consumption</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="fuelQuantityLabel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Fuel quantity</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QProgressBar" name="data_fueld_qt">
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="format">
+            <string>%p %</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QLabel" name="data_fuel_consump">
+           <property name="text">
+            <string>0 L/100 km</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QSlider" name="frame_slider">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_back">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="media-seek-backward">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_stop">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="media-playback-pause">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_forward">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="media-seek-forward">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextBesideIcon</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_start"/>
+   <addaction name="action_open"/>
+   <addaction name="action_clear"/>
+  </widget>
+  <action name="action_clear">
+   <property name="icon">
+    <iconset theme="edit-clear">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="action_open">
+   <property name="icon">
+    <iconset theme="document-open">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Open File</string>
+   </property>
+   <property name="toolTip">
+    <string>Open File</string>
+   </property>
+  </action>
+  <action name="action_start">
+   <property name="icon">
+    <iconset theme="folder-download">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Start Capture</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

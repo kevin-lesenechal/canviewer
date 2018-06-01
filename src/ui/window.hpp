@@ -29,6 +29,16 @@ class Window : public QWidget
 public:
     explicit Window(FramesModel& frames_model);
 
+signals:
+    void start_capture(const std::string& filename);
+
+public slots:
+    void capture_started();
+    void frame_received();
+
+private slots:
+    void start_capture_action();
+
 private:
     Ui::Window   ui;
     FramesModel& _frames_model;

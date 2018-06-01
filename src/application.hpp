@@ -20,9 +20,10 @@
 #include "ui/window.hpp"
 #include "ui/frames_model.hpp"
 #include "frame.hpp"
-#include "socketcan_source.hpp"
+#include "source_interface.hpp"
 
 #include <set>
+#include <memory>
 
 class QApplication;
 
@@ -30,11 +31,15 @@ class Application : public QObject
 {
     Q_OBJECT
 public:
-    Application(QApplication& qapp, const std::string& devname);
+    explicit Application(QApplication& qapp);
 
     int run();
 
+signals:
+    void capture_started();
+
 private slots:
+    void start_capture(const std::string& filename);
     void frame_received(Frame frame);
 
 private:
@@ -43,5 +48,5 @@ private:
     std::set<uint32_t>  _frame_ids;
     FramesModel         _frames_model;
     Window              _window;
-    SocketcanSource     _can_source;
+    std::unique_ptr<SourceInterface> _source;
 };

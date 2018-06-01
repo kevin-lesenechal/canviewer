@@ -17,19 +17,27 @@
 
 #pragma once
 
+#include "source_interface.hpp"
+
 #include <string>
 #include <memory>
+#include <fstream>
 
 #include <QSocketNotifier>
 
+#include <linux/can.h>
+
 class Frame;
 
-class SocketcanSource : public QObject
+class SocketcanSource : public QObject, public SourceInterface
 {
     Q_OBJECT
 public:
-    explicit SocketcanSource(const std::string& ifname);
-    ~SocketcanSource();
+    SocketcanSource(const std::string& ifname, const std::string& filename);
+    ~SocketcanSource() override;
+
+    void start() override;
+    void stop() override;
 
 signals:
     void frame_received(Frame);
@@ -41,6 +49,7 @@ private:
     static int can_ifindex(int sockfd, const std::string& ifname);
 
 private:
-    int _sockfd;
+    int           _sockfd;
+    sockaddr_can  _canaddr;
     std::unique_ptr<QSocketNotifier> _notifier;
 };

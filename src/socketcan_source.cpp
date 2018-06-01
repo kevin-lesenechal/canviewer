@@ -30,28 +30,21 @@
 #include <system_error>
 #include <cstring>
 
-SocketcanSource::SocketcanSource(const std::string& ifname)
     : _sockfd(-1)
+SocketcanSource::SocketcanSource(const std::string& ifname,
+                                 const std::string& filename)
 {
-    sockaddr_can can_addr;
-
-    if ((_sockfd = socket(PF_CAN, SOCK_RAW | SOCK_NONBLOCK, CAN_RAW)) == -1) {
+    if ((_sockfd = ::socket(PF_CAN, SOCK_RAW | SOCK_NONBLOCK, CAN_RAW)) == -1) {
         throw std::system_error({errno, std::system_category()},
                                 "socket: failed to create socket");
     }
 
-    std::memset(&can_addr, 0, sizeof can_addr);
-    can_addr.can_family = PF_CAN;
-    if ((can_addr.can_ifindex = can_ifindex(_sockfd, ifname)) == -1) {
+    std::memset(&_canaddr, 0, sizeof _canaddr);
+    _canaddr.can_family = PF_CAN;
+    if ((_canaddr.can_ifindex = can_ifindex(_sockfd, ifname)) == -1) {
         ::close(_sockfd);
         throw std::system_error({errno, std::system_category()},
                                 "failed to retrieve CAN device");
-    }
-    if (bind(_sockfd, reinterpret_cast<sockaddr*>(&can_addr),
-             sizeof can_addr) == -1) {
-        ::close(_sockfd);
-        throw std::system_error({errno, std::system_category()},
-                                "bind: failed to bind CAN address");
     }
     _notifier = std::make_unique<QSocketNotifier>(_sockfd, QSocketNotifier::Read);
     connect(_notifier.get(), &QSocketNotifier::activated,
@@ -92,4 +85,17 @@ int SocketcanSource::can_ifindex(int sockfd, const std::string& ifname)
     }
 
     return req.ifr_ifindex;
+}
+
+void SocketcanSource::start()
+{
+    if (::bind(_sockfd, reinterpret_cast<sockaddr*>(&_canaddr),
+             sizeof _canaddr) == -1) {
+        throw std::system_error({errno, std::system_category()},
+                                "bind: failed to bind CAN address");
+    }
+}
+
+void SocketcanSource::stop()
+{
 }

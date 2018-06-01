@@ -16,25 +16,35 @@
  *************************************************************************/
 
 #include "application.hpp"
+#include "socketcan_source.hpp"
 
 #include <QApplication>
 
 #include <cstring>
 
-Application::Application(QApplication& qapp, const std::string& devname)
+Application::Application(QApplication& qapp)
     : _qapp(qapp),
       _frames_model(_frames),
-      _window(_frames_model),
-      _can_source(devname)
+      _window(_frames_model)
 {
-    connect(&_can_source, &SocketcanSource::frame_received,
-            this, &Application::frame_received);
+    connect(&_window, &Window::start_capture,
+            this, &Application::start_capture);
 }
 
 int Application::run()
 {
     _window.show();
     return _qapp.exec();
+}
+
+void Application::start_capture(const std::string& filename)
+{
+    auto source = std::make_unique<SocketcanSource>("vcan0", filename);
+    connect(source.get(), &SocketcanSource::frame_received,
+            this, &Application::frame_received);
+    source->start();
+    _source = std::move(source);
+    _window.capture_started();
 }
 
 void Application::frame_received(Frame frame)

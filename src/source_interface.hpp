@@ -15,42 +15,20 @@
  * along with canviewer. If not, see <http://www.gnu.org/licenses/>.     *
  *************************************************************************/
 
-#include "window.hpp"
-#include "frames_model.hpp"
+#pragma once
 
-Window::Window(FramesModel& frames_model)
-    : _frames_model(frames_model)
+#include <QObject>
+
+class Frame;
+
+class SourceInterface
 {
-    ui.setupUi(this);
-    ui.frames_table->setModel(&_frames_model);
-    ui.frames_table->setColumnWidth(0, 80);
-    ui.frames_table->setColumnWidth(1, 180);
-    ui.frames_table->setColumnWidth(2, 350);
+public:
+    virtual ~SourceInterface() = default;
 
-    connect(ui.action_start, &QAction::triggered,
-            this, &Window::start_capture_action);
-}
+    virtual void start() = 0;
+    virtual void stop() = 0;
 
-void Window::capture_started()
-{
-    ui.button_back->setEnabled(false);
-    ui.button_stop->setEnabled(true);
-    ui.button_forward->setEnabled(false);
-    ui.action_start->setEnabled(false);
-    ui.frame_slider->setEnabled(false);
-    ui.frame_slider->setMaximum(0);
-    ui.frame_slider->setValue(0);
-}
-
-void Window::frame_received()
-{
-}
-
-void Window::start_capture_action()
-{
-    QString file = QFileDialog::getSaveFileName(this, "Select log file");
-
-    if (!file.isEmpty()) {
-        emit start_capture(file.toStdString());
-    }
-}
+signals:
+    virtual void frame_received(Frame) = 0;
+};

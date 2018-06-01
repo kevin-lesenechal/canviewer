@@ -26,10 +26,8 @@ int main(int argc, char** argv)
 {
     QApplication qapp(argc, argv);
 
-    std::string devname = argc > 1 ? argv[1] : "can0";
-
     try {
-        Application app(qapp, devname);
+        Application app(qapp);
         return app.run();
     } catch (const std::exception& e) {
         QString msg = "Oops! An internal error occurred...\n\n";
