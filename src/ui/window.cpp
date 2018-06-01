@@ -71,6 +71,23 @@ void Window::frame_received()
     }
 }
 
+void Window::sample_updated(const Sample& sample)
+{
+    ui.data_throttle->setValue(qRound(sample.throttle / 255.0 * 100.0));
+
+    if (sample.gear == 0) {
+        ui.data_gear->setText("N");
+    } else if (sample.gear == 255) {
+        ui.data_gear->setText("???");
+    } else {
+        ui.data_gear->setText(QString::number(sample.gear));
+    }
+
+    ui.data_engine_speed->setValue(sample.engine_speed);
+    ui.data_engine_temp->setText(QString::number(sample.engine_temp) + " °C");
+    ui.data_air_temp->setText(QString::number(sample.air_temp) + " °C");
+}
+
 void Window::start_capture_action()
 {
     QString file = QFileDialog::getSaveFileName(this, "Select log file");

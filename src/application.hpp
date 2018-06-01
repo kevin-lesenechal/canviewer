@@ -21,6 +21,7 @@
 #include "ui/frames_model.hpp"
 #include "frame.hpp"
 #include "source_interface.hpp"
+#include "sample.hpp"
 
 #include <set>
 #include <memory>
@@ -51,5 +52,6 @@ private:
     std::set<uint32_t>  _frame_ids;
     FramesModel         _frames_model;
     Window              _window;
+    Sample              _sample;
     std::unique_ptr<SourceInterface> _source;
 };

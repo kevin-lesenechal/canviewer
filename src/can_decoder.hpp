@@ -17,37 +17,7 @@
 
 #pragma once
 
-#include <QMainWindow>
-#include <sample.hpp>
-
-#include "ui_window.h"
-
-class FramesModel;
+class Frame;
 class Sample;
 
-class Window : public QMainWindow
-{
-    Q_OBJECT
-public:
-    explicit Window(FramesModel& frames_model);
-
-signals:
-    void start_capture(const std::string& filename);
-    void open_file(const std::string& filename);
-    void clear();
-    void seek_frame(int);
-
-public slots:
-    void capture_started();
-    void file_session_started(int frame_count);
-    void frame_received();
-    void sample_updated(const Sample& sample);
-
-private slots:
-    void start_capture_action();
-    void open_file_action();
-
-private:
-    Ui::Window   ui;
-    FramesModel& _frames_model;
-};
+bool decode_can_frame(const Frame& frame, Sample& sample);

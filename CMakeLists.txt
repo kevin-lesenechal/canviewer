@@ -26,6 +26,9 @@ set(SOURCES
     src/file_source.hpp
     src/file_source.cpp
     src/source_interface.hpp
+    src/sample.hpp
+    src/can_decoder.hpp
+    src/can_decoder.cpp
 )
 
 set(TEST_SOURCES "")

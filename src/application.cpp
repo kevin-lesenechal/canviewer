@@ -18,6 +18,7 @@
 #include "application.hpp"
 #include "socketcan_source.hpp"
 #include "file_source.hpp"
+#include "can_decoder.hpp"
 
 #include <QApplication>
 
@@ -33,6 +34,7 @@ Application::Application(QApplication& qapp)
     connect(&_window, &Window::open_file, this, &Application::open_file);
     connect(&_window, &Window::clear, this, &Application::clear);
     connect(&_window, &Window::seek_frame, this, &Application::seek_frame);
+    std::memset(&_sample, 0, sizeof _sample);
 }
 
 int Application::run()
@@ -85,6 +87,8 @@ void Application::frame_received(Frame frame)
     }
 
     _window.frame_received();
+    decode_can_frame(frame, _sample);
+    _window.sample_updated(_sample);
 }
 
 void Application::clear()
