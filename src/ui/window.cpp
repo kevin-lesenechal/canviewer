@@ -18,6 +18,8 @@
 #include "window.hpp"
 #include "frames_model.hpp"
 
+#include <QFileDialog>
+
 Window::Window(FramesModel& frames_model)
     : _frames_model(frames_model)
 {
@@ -30,6 +32,8 @@ Window::Window(FramesModel& frames_model)
     connect(ui.action_clear, &QAction::triggered, this, &Window::clear);
     connect(ui.action_start, &QAction::triggered,
             this, &Window::start_capture_action);
+    connect(ui.action_open, &QAction::triggered,
+            this, &Window::open_file_action);
 }
 
 void Window::capture_started()
@@ -43,8 +47,27 @@ void Window::capture_started()
     ui.frame_slider->setValue(0);
 }
 
+void Window::file_session_started(int frame_count)
+{
+    ui.button_back->setEnabled(true);
+    ui.button_stop->setEnabled(true);
+    ui.button_forward->setEnabled(true);
+    ui.action_start->setEnabled(true);
+    ui.frame_slider->setEnabled(true);
+    ui.frame_slider->setMaximum(frame_count);
+    ui.frame_slider->setValue(0);
+}
+
 void Window::frame_received()
 {
+    if (ui.frame_slider->maximum() > 0) {
+        ui.frame_slider->blockSignals(true);
+        ui.frame_slider->setValue(ui.frame_slider->value() + 1);
+        ui.frame_slider->blockSignals(false);
+        ui.statusbar->showMessage(QString("Frame %1 / %2")
+                                      .arg(ui.frame_slider->value())
+                                      .arg(ui.frame_slider->maximum()));
+    }
 }
 
 void Window::start_capture_action()
@@ -53,5 +76,14 @@ void Window::start_capture_action()
 
     if (!file.isEmpty()) {
         emit start_capture(file.toStdString());
+    }
+}
+
+void Window::open_file_action()
+{
+    QString file = QFileDialog::getOpenFileName(this, "Select log file");
+
+    if (!file.isEmpty()) {
+        emit open_file(file.toStdString());
     }
 }

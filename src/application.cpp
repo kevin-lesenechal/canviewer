@@ -17,6 +17,7 @@
 
 #include "application.hpp"
 #include "socketcan_source.hpp"
+#include "file_source.hpp"
 
 #include <QApplication>
 
@@ -29,6 +30,7 @@ Application::Application(QApplication& qapp)
 {
     connect(&_window, &Window::start_capture,
             this, &Application::start_capture);
+    connect(&_window, &Window::open_file, this, &Application::open_file);
     connect(&_window, &Window::clear, this, &Application::clear);
 }
 
@@ -46,6 +48,17 @@ void Application::start_capture(const std::string& filename)
     source->start();
     _source = std::move(source);
     _window.capture_started();
+}
+
+void Application::open_file(const std::string& filename)
+{
+    auto source = std::make_unique<FileSource>(filename);
+    connect(source.get(), &FileSource::frame_received,
+            this, &Application::frame_received);
+    source->start();
+    int frame_count = source->frame_count();
+    _source = std::move(source);
+    _window.file_session_started(frame_count);
 }
 
 void Application::frame_received(Frame frame)
@@ -69,6 +82,8 @@ void Application::frame_received(Frame frame)
         std::memcpy(new_frame.data, frame.data, frame.size);
         _frames_model.row_updated(row);
     }
+
+    _window.frame_received();
 }
 
 void Application::clear()

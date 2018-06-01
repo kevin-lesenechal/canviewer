@@ -40,6 +40,7 @@ signals:
 
 private slots:
     void start_capture(const std::string& filename);
+    void open_file(const std::string& filename);
     void frame_received(Frame frame);
     void clear();
 

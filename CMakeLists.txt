@@ -23,6 +23,8 @@ set(SOURCES
     src/ui/window.cpp
     src/ui/frames_model.hpp
     src/ui/frames_model.cpp
+    src/file_source.hpp
+    src/file_source.cpp
     src/source_interface.hpp
 )
 

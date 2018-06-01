@@ -17,33 +17,38 @@
 
 #pragma once
 
-#include <QMainWindow>
+#include "frame.hpp"
+#include "source_interface.hpp"
 
-#include "ui_window.h"
+#include <string>
+#include <fstream>
 
-class FramesModel;
+#include <QObject>
 
-class Window : public QMainWindow
+class Frame;
+
+class FileSource : public QObject, public SourceInterface
 {
     Q_OBJECT
 public:
-    explicit Window(FramesModel& frames_model);
+    explicit FileSource(const std::string& filename);
+
+    void start() override;
+    void stop() override;
+    void seek(int frame_offset);
+
+    int frame_count() const noexcept { return _frame_count; }
 
 signals:
-    void start_capture(const std::string& filename);
-    void open_file(const std::string& filename);
-    void clear();
-
-public slots:
-    void capture_started();
-    void file_session_started(int frame_count);
-    void frame_received();
+    void frame_received(Frame);
 
 private slots:
-    void start_capture_action();
-    void open_file_action();
+    void on_next_frame();
 
 private:
-    Ui::Window   ui;
-    FramesModel& _frames_model;
+    bool          _run;
+    std::ifstream _file;
+    Frame         _to_send;
+    bool          _is_first;
+    int           _frame_count;
 };
