@@ -34,6 +34,7 @@ Window::Window(FramesModel& frames_model)
             this, &Window::start_capture_action);
     connect(ui.action_open, &QAction::triggered,
             this, &Window::open_file_action);
+    connect(ui.frame_slider, &QSlider::valueChanged, this, &Window::seek_frame);
 }
 
 void Window::capture_started()

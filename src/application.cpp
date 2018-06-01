@@ -32,6 +32,7 @@ Application::Application(QApplication& qapp)
             this, &Application::start_capture);
     connect(&_window, &Window::open_file, this, &Application::open_file);
     connect(&_window, &Window::clear, this, &Application::clear);
+    connect(&_window, &Window::seek_frame, this, &Application::seek_frame);
 }
 
 int Application::run()
@@ -91,4 +92,13 @@ void Application::clear()
     _frame_ids.clear();
     _frames.clear();
     _frames_model.cleared();
+}
+
+void Application::seek_frame(int frame_offset)
+{
+    FileSource* source = dynamic_cast<FileSource*>(_source.get());
+    if (source != nullptr) {
+        clear();
+        source->seek(frame_offset);
+    }
 }

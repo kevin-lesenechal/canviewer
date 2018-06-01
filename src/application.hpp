@@ -43,6 +43,7 @@ private slots:
     void open_file(const std::string& filename);
     void frame_received(Frame frame);
     void clear();
+    void seek_frame(int);
 
 private:
     QApplication&       _qapp;
