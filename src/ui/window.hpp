@@ -31,6 +31,7 @@ public:
 
 signals:
     void start_capture(const std::string& filename);
+    void clear();
 
 public slots:
     void capture_started();

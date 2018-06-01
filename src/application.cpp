@@ -29,6 +29,7 @@ Application::Application(QApplication& qapp)
 {
     connect(&_window, &Window::start_capture,
             this, &Application::start_capture);
+    connect(&_window, &Window::clear, this, &Application::clear);
 }
 
 int Application::run()
@@ -68,4 +69,11 @@ void Application::frame_received(Frame frame)
         std::memcpy(new_frame.data, frame.data, frame.size);
         _frames_model.row_updated(row);
     }
+}
+
+void Application::clear()
+{
+    _frame_ids.clear();
+    _frames.clear();
+    _frames_model.cleared();
 }

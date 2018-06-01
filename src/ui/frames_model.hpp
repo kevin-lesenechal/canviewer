@@ -36,6 +36,7 @@ public:
 
     void row_inserted(int row);
     void row_updated(int row);
+    void cleared();
 
 private:
     const std::vector<Frame>& _frames;

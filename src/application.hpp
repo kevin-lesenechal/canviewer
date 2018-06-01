@@ -41,6 +41,7 @@ signals:
 private slots:
     void start_capture(const std::string& filename);
     void frame_received(Frame frame);
+    void clear();
 
 private:
     QApplication&       _qapp;

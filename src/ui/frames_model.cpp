@@ -112,3 +112,8 @@ void FramesModel::row_updated(int row)
     emit dataChanged(createIndex(row, 0), createIndex(row, 0));
     emit dataChanged(createIndex(row, 2), createIndex(row, 2));
 }
+
+void FramesModel::cleared()
+{
+    emit layoutChanged();
+}
