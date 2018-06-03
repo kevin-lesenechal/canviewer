@@ -78,6 +78,13 @@ bool extract_air_temp(Sample& sample, uint8_t data)
     return true;
 }
 
+bool extract_speed(Sample& sample, uint8_t data)
+{
+    sample.indicated_speed = static_cast<uint16_t>(data * 10);
+
+    return true;
+}
+
 }
 
 bool decode_can_frame(const Frame& frame, Sample& sample)
@@ -89,6 +96,7 @@ bool decode_can_frame(const Frame& frame, Sample& sample)
     case 0x020a: // Engine speed (1 (2?) byte(s)) + ??? [DLC = 8]
         if (frame.size != 8) return false;
         extract_engine_speed(sample, frame.data);
+        extract_speed(sample, frame.data[4]);
         break;
 
     case 0x216: // Throttle + (speed?) + ??? [DLC = 7]
