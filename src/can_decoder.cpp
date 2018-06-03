@@ -87,43 +87,71 @@ bool extract_speed(Sample& sample, uint8_t data)
 
 }
 
+#define DLC_CHECK(n) do { if (frame.size != (n)) return false; } while (0)
+
+/**
+ * @brief Extract information from a CAN frame into a recording sample
+ * @param frame  The CAN frame to extract information from
+ * @param sample A sample instance to write information to
+ * @return false if the frame ID is unknown or some values fall outside their
+ *         known boundaries for a given frame ID, otherwise true
+ * @note Returning false does not prevent this function from writing values into
+ *       @p sample for the known values encountered
+ */
 bool decode_can_frame(const Frame& frame, Sample& sample)
 {
     bool nok;
 
     switch (frame.id)
     {
-    case 0x020a: // Engine speed (1 (2?) byte(s)) + ??? [DLC = 8]
-        if (frame.size != 8) return false;
+    case 0x020a: // Engine speed (1 (2?) byte(s)) + speed + ???
+        DLC_CHECK(8);
         extract_engine_speed(sample, frame.data);
         extract_speed(sample, frame.data[4]);
         break;
 
-    case 0x216: // Throttle + (speed?) + ??? [DLC = 7]
-        if (frame.size != 7) return false;
+    case 0x0216: // Throttle + ???
+        DLC_CHECK(7);
         extract_throttle(sample, frame.data[0]);
         break;
 
-    case 0x0236: // Gear [DLC = 1]
-        if (frame.size != 1) return false;
+    case 0x022e: // ???
+        DLC_CHECK(2);
+        return frame.data[0] == 0x00 && frame.data[1] == 0x00;
+
+    case 0x0236: // Gear
+        DLC_CHECK(1);
         return extract_gear(sample, frame.data[0]);
 
-    case 0x023a: // Diagnostic [DLC = 3]
-        if (frame.size != 3) return false;
+    case 0x023a: // Diagnostic
+        DLC_CHECK(3);
+        /*
+         * data[0] seems to be a bit field:
+         *   1: ? (always 0)
+         *   2: ? (always 1)
+         *   3: starter?
+         *   4: ? (always 0)
+         *   5: ? (always 0)
+         *   6: ? (always 0)
+         *   7: ? (always 0)
+         *   8: ? (always 0)
+         */
         sample.flags.engine_alert = frame.data[0] & 0x0c;
         return (frame.data[0] & 0xf0) == 0
                && frame.data[1] == 0xff
                && frame.data[2] == 0xff;
 
-    case 0x023e: // Engine temp (1 byte) + air temp (1 byte) + ??? [DLC = 4]
-        if (frame.size != 4) return false;
+    case 0x023e: // Engine temp (1 byte) + air temp (1 byte) + ???
+        DLC_CHECK(4);
         nok = !extract_engine_temp(sample, frame.data[0]);
         nok |= !extract_air_temp(sample, frame.data[1]);
         nok |= frame.data[2] != 0x00;
         nok |= frame.data[3] != 0x00;
         return !nok;
 
-    default: return false;
+    default:
+        return false;
     }
+
     return true;
 }
