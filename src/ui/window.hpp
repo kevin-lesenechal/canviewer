@@ -50,4 +50,7 @@ private slots:
 private:
     Ui::Window   ui;
     FramesModel& _frames_model;
+    int _speed;
+    int _speed_sum;
+    int _speed_i;
 };

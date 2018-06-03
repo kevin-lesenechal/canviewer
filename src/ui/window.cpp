@@ -21,7 +21,10 @@
 #include <QFileDialog>
 
 Window::Window(FramesModel& frames_model)
-    : _frames_model(frames_model)
+    : _frames_model(frames_model),
+      _speed(0),
+      _speed_sum(0),
+      _speed_i(0)
 {
     ui.setupUi(this);
     ui.frames_table->setModel(&_frames_model);
@@ -85,6 +88,14 @@ void Window::sample_updated(const Sample& sample)
         ui.data_gear->setText(QString::number(sample.gear));
     }
 
+    _speed_sum += sample.indicated_speed;
+    if (++_speed_i >= 40) {
+        _speed = qRound(_speed_sum / 40.0);
+        _speed_i = 0;
+        _speed_sum = 0;
+    }
+
+    ui.data_speed->setText(QString::number(_speed) + " km/h");
     ui.data_engine_speed->setValue(sample.engine_speed);
     ui.data_engine_temp->setText(QString::number(sample.engine_temp) + " °C");
     ui.data_air_temp->setText(QString::number(sample.air_temp) + " °C");
