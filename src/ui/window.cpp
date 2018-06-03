@@ -27,7 +27,9 @@ Window::Window(FramesModel& frames_model)
     ui.frames_table->setModel(&_frames_model);
     ui.frames_table->setColumnWidth(0, 80);
     ui.frames_table->setColumnWidth(1, 180);
-    ui.frames_table->setColumnWidth(2, 350);
+    for (int i = 2; i < 10; ++i) {
+        ui.frames_table->setColumnWidth(i, 42);
+    }
 
     connect(ui.action_clear, &QAction::triggered, this, &Window::clear);
     connect(ui.action_start, &QAction::triggered,

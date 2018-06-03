@@ -39,5 +39,9 @@ public:
     void cleared();
 
 private:
+    static bool is_byte_hidden(const Frame& frame, uint8_t offset);
+    static bool is_byte_normal(const Frame& frame, uint8_t offset);
+
+private:
     const std::vector<Frame>& _frames;
 };

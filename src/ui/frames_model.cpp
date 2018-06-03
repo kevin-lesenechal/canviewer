@@ -29,14 +29,14 @@ int FramesModel::rowCount(const QModelIndex&) const
 
 int FramesModel::columnCount(const QModelIndex&) const
 {
-    return 3;
+    return 10;
 }
 
 QVariant FramesModel::headerData(int section,
                                  Qt::Orientation orientation,
                                  int role) const
 {
-    static QStringList headers{"Count", "ID", "Data"};
+    static QStringList headers{"Count", "ID", "1", "2", "3", "4", "5", "6", "7", "8"};
 
     if (orientation != Qt::Horizontal
         || section >= headers.size()) {
@@ -72,10 +72,20 @@ QVariant FramesModel::data(const QModelIndex& index, int role) const
                 + " " + QString::number(frame.id & 0xffff, 16).rightJustified(4, '0');
 
         case 2: // Data
-            for (int i = 0; i < frame.size; ++i) {
-                s += QString::number(frame.data[i], 16).rightJustified(2, '0') + " ";
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9: {
+            int i = index.column() - 2;
+            if (i < frame.size) {
+                return QString::number(frame.data[i], 16).rightJustified(2, '0');
+            } else {
+                return {};
             }
-            return s;
+        }
 
         default:
             return QVariant(":)");
@@ -91,10 +101,16 @@ QVariant FramesModel::data(const QModelIndex& index, int role) const
     } else if (role == Qt::TextAlignmentRole) {
         if (index.column() == 0) {
             return Qt::AlignRight + Qt::AlignVCenter;
-        } else if (index.column() == 1) {
-            return Qt::AlignHCenter;
         } else {
-            return Qt::AlignLeft;
+            return Qt::AlignHCenter;
+        }
+    } else if (role == Qt::ForegroundRole) {
+        if (index.column() > 1 && is_byte_hidden(frame, index.column() - 2)) {
+            return QColor(50, 50, 50);
+        } else if (index.column() > 1 && is_byte_normal(frame, index.column() - 2)) {
+            return QColor(100, 100, 100);
+        } else {
+            return {};
         }
     } else {
         return {};
@@ -110,10 +126,67 @@ void FramesModel::row_inserted(int row)
 void FramesModel::row_updated(int row)
 {
     emit dataChanged(createIndex(row, 0), createIndex(row, 0));
-    emit dataChanged(createIndex(row, 2), createIndex(row, 2));
+    emit dataChanged(createIndex(row, 2), createIndex(row, 9));
 }
 
 void FramesModel::cleared()
 {
     emit layoutChanged();
+}
+
+bool FramesModel::is_byte_hidden(const Frame& frame, uint8_t offset)
+{
+    if (frame.id == 0x236 && offset == 0
+        && (frame.data[0] == 0x00 || frame.data[0] == 0x20
+            || frame.data[0] == 0x40 || frame.data[0] == 0x60
+            || frame.data[0] == 0x80 || frame.data[0] == 0xa0
+            || frame.data[0] == 0xc0 || frame.data[0] == 0xe0)) {
+        return true;
+    }
+    if (frame.id == 0x23e && (offset == 0 || offset == 1)) {
+        return true;
+    }
+    if (frame.id == 0x216 && offset == 0
+        && frame.data[0] >= 0x22 && frame.data[0] <= 0x80) {
+        return true;
+    }
+    if (frame.id == 0x20a && (offset == 2 || offset == 4)) {
+        return true;
+    }
+
+    return false;
+}
+
+bool FramesModel::is_byte_normal(const Frame& frame, uint8_t offset)
+{
+    if (frame.id == 0x20a
+        && ((offset == 0 && frame.data[0] == 0x8f)
+            || (offset == 1 && frame.data[1] == 0xa3)
+            || (offset == 5 && frame.data[5] == 0x01))) {
+        return true;
+    }
+    if (frame.id == 0x216
+        && ((offset == 1 && frame.data[1] == 0x00)
+            || (offset == 2 && frame.data[2] == 0x80)
+            || (offset == 3 && frame.data[3] == 0x00)
+            || (offset == 6 && frame.data[6] == 0x00))) {
+        return true;
+    }
+    if (frame.id == 0x22e
+        && ((offset == 0 && frame.data[0] == 0x00)
+            || (offset == 1 && frame.data[1] == 0x00))) {
+        return true;
+    }
+    if (frame.id == 0x23a
+        && ((offset == 0 && frame.data[0] == 0x02)
+            || (offset == 1 && frame.data[1] == 0xff)
+            || (offset == 2 && frame.data[2] == 0xff))) {
+        return true;
+    }
+    if (frame.id == 0x23e
+        && ((offset == 2 && frame.data[2] == 0x00))) {
+        return true;
+    }
+
+    return false;
 }
