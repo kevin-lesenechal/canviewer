@@ -27,13 +27,14 @@
 FileSource::FileSource(const std::string& filename)
     : _run(true),
       _file(filename),
-      _is_first(true)
+      _is_first(true),
+      _prev_time(0)
 {
     if (!_file) {
         throw std::runtime_error("failed to open input file");
     }
 
-    _frame_count = static_cast<int>(QFile(filename.c_str()).size() / 16);
+    _frame_count = static_cast<int>(QFile(filename.c_str()).size() / 19);
     _to_send.count = 0;
 }
 
@@ -52,7 +53,8 @@ void FileSource::stop()
 void FileSource::on_next_frame()
 {
     struct {
-        uint16_t delay;
+        uint32_t time;
+        uint16_t time_ms;
         uint32_t id;
         uint8_t  size;
         char     data[8];
@@ -67,20 +69,31 @@ void FileSource::on_next_frame()
         _is_first = false;
     }
 
-    if (!_file.read(reinterpret_cast<char*>(&line), 16)) {
+    if (!_file.read(reinterpret_cast<char*>(&line), sizeof line)
+        || line.size > 8) {
         return;
     }
 
-    _to_send.id = qFromBigEndian(line.id);
-    _to_send.size = qFromBigEndian(line.size);
+    if (_prev_time == 0) {
+        _prev_time = line.time;
+        _prev_time_ms = line.time_ms;
+    }
+
+    _to_send.id = line.id;
+    _to_send.size = line.size;
     std::memcpy(_to_send.data, line.data, _to_send.size);
 
-    QTimer::singleShot(qFromBigEndian(line.delay) / 1000,
-                       this, &FileSource::on_next_frame);
+    uint32_t delay = (line.time - _prev_time) * 1000
+                     + (line.time_ms - _prev_time_ms);
+    _prev_time = line.time;
+    _prev_time_ms = line.time_ms;
+
+    QTimer::singleShot(delay, this, &FileSource::on_next_frame);
 }
 
 void FileSource::seek(int frame_offset)
 {
-    _file.seekg(frame_offset * 16);
+    _file.seekg(frame_offset * 19);
     _is_first = true;
+    _prev_time = 0;
 }

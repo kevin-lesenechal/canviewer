@@ -51,4 +51,6 @@ private:
     Frame         _to_send;
     bool          _is_first;
     int           _frame_count;
+    uint32_t      _prev_time;
+    uint16_t      _prev_time_ms;
 };
